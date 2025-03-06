@@ -43,3 +43,6 @@ A Tic Tac Toe game where you play against an AI opponent powered by OpenAI's GPT
 ## License
 
 MIT
+
+
+https://buymeacoffee.com/5rr1ank5gl
