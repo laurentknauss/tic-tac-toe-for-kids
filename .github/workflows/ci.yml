@@ -30,7 +30,9 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          pnpm install
+          pnpm add -D terser
 
       # Build project
       - name: Build
