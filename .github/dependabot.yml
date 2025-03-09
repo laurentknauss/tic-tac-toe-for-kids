@@ -1,0 +1,47 @@
+version: 2
+updates:
+  # npm/pnpm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      dependencies:
+        dependency-type: "production"
+      dev-dependencies:
+        dependency-type: "development"
+    labels:
+      - "dependencies"
+      - "automerge"
+    ignore:
+      # Ignore major updates for core libraries that might require significant migrations
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "next"
+        versions: ["*-canary.*"]
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "github-actions"
+      - "dependencies"
+
+# Auto-merge configuration
+import:
+  - from:
+      owner: dependabot
+      repo: dependabot-core
+    file: .github/auto-merge.yml
+
+# Alternatively, you can specify auto-merge rules directly
+pull-request-merge-config:
+  auto-merge-strategy: squash
+  required-reviewers: 0
+  update-branch-on-merge: false
