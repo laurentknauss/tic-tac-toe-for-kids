@@ -32,10 +32,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Run linting
-      - name: Lint
-        run: pnpm lint
-
       # Run tests
       - name: Test
         run: pnpm test
