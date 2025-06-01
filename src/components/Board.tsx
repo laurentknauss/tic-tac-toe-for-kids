@@ -1,7 +1,6 @@
-import React from 'react';
-import Square from './Square';
 import { motion } from 'framer-motion';
 import { Board as BoardType } from '../types';
+import Square from './square';
 
 interface BoardProps {
   squares: BoardType;
@@ -9,9 +8,9 @@ interface BoardProps {
   disabled: boolean;
 }
 
-const Board: React.FC<BoardProps> = ({ squares, onClick, disabled }) => {
+export default function Board({ squares, onClick, disabled }: BoardProps) {
   return (
-    <motion.div 
+    <motion.div
       className="board"
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -28,6 +27,4 @@ const Board: React.FC<BoardProps> = ({ squares, onClick, disabled }) => {
       ))}
     </motion.div>
   );
-};
-
-export default Board;
+}

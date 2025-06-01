@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import Board from '@/components/Board';
+import Header from '@/components/Header';
+import PacmanGame from '@/components/PacmanGame';
+import { Button } from '@/components/ui/button';
+import { getAIMove, getRandomValidMove } from '@/services/openaiService';
+import { Board as BoardType, DifficultyLevel, SquareValue } from '@/types';
+import { aiWinMessages, drawMessages, getRandomMessage, playerWinMessages } from '@/utils/gameMessages';
+import { calculateWinner, isDraw } from '@/utils/gameUtils';
 import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
-import Board from './components/Board';
-import Header from './components/Header';
-import AnimatedButton from './components/AnimatedButton';
-import { calculateWinner, isDraw } from './utils/gameUtils';
-import { getAIMove, getRandomValidMove } from './services/openaiService';
-import { Board as BoardType, DifficultyLevel, SquareValue } from './types';
-import { playerWinMessages, aiWinMessages, drawMessages, getRandomMessage } from './utils/gameMessages';
 
 // Allowed player names
 const ALLOWED_PLAYERS = ['Clara', 'Camille'];
 
-const App: React.FC = () => {
+export default function App() {
+  const navigate = useNavigate();
   const [board, setBoard] = useState<BoardType>(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState<boolean>(true); // Player is X, AI is O
   const [winner, setWinner] = useState<SquareValue>(null);
@@ -33,7 +36,7 @@ const App: React.FC = () => {
     const gameWinner = calculateWinner(board);
     if (gameWinner) {
       setWinner(gameWinner);
-      
+
       // Choose a message the player hasn't seen recently
       let message;
       if (gameWinner === 'X') {
@@ -43,7 +46,7 @@ const App: React.FC = () => {
       } else {
         message = getMessageNotRecentlyUsed(aiWinMessages);
       }
-      
+
       setGameStatus(message);
     } else if (isDraw(board)) {
       const drawMessage = getMessageNotRecentlyUsed(drawMessages);
@@ -63,26 +66,26 @@ const App: React.FC = () => {
   const getMessageNotRecentlyUsed = (messages: string[]): string => {
     // Filter out recently used messages
     const availableMessages = messages.filter(msg => !usedMessages.has(msg));
-    
+
     // If all messages have been used, reset the used messages
     if (availableMessages.length === 0) {
       setUsedMessages(new Set());
       return getRandomMessage(messages);
     }
-    
+
     // Get a random message from available ones
     const message = getRandomMessage(availableMessages);
-    
+
     // Update used messages, keeping track of last 5 messages
     const newUsedMessages = new Set(usedMessages);
     newUsedMessages.add(message);
-    
+
     // If we've used more than 5 messages, start removing old ones
     if (newUsedMessages.size > 5) {
       const oldestMessage = Array.from(newUsedMessages)[0];
       newUsedMessages.delete(oldestMessage);
     }
-    
+
     setUsedMessages(newUsedMessages);
     return message;
   };
@@ -109,19 +112,19 @@ const App: React.FC = () => {
   const makeAIMove = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Make sure there's an API key
       if (!apiKey) {
         throw new Error('Clé API OpenAI non configurée. Veuillez l\'ajouter dans le fichier .env');
       }
-      
+
       const moveIndex = await getAIMove(board, difficulty, apiKey);
       makeMoveAtIndex(moveIndex);
     } catch (error) {
       console.error('Erreur pendant le coup de l\'IA:', error);
       setError(`${error instanceof Error ? error.message : 'Erreur inconnue'}`);
-      
+
       // Fallback to random move
       const randomMoveIndex = getRandomValidMove(board);
       if (randomMoveIndex !== null) {
@@ -165,7 +168,7 @@ const App: React.FC = () => {
   const handleStartGame = (e: React.FormEvent) => {
     e.preventDefault();
     setNameError('');
-    
+
     if (ALLOWED_PLAYERS.includes(playerName)) {
       setGameState('playing');
       resetGame();
@@ -201,24 +204,28 @@ const App: React.FC = () => {
       <form onSubmit={handleStartGame} className="name-form">
         <label>
           {gameStatus}
-          <div className="player-selection">
-            <AnimatedButton
-              isSelected={playerName === 'Clara'}
+          <div className="player-selection flex gap-4 mt-4">
+            <Button
+              variant={playerName === 'Clara' ? 'default' : 'secondary'}
+              size="lg"
+              className="player-button"
               onClick={() => handlePlayerSelect('Clara')}
             >
               Clara
-            </AnimatedButton>
-            <AnimatedButton
-              isSelected={playerName === 'Camille'}
+            </Button>
+            <Button
+              variant={playerName === 'Camille' ? 'default' : 'secondary'}
+              size="lg"
+              className="player-button"
               onClick={() => handlePlayerSelect('Camille')}
             >
               Camille
-            </AnimatedButton>
+            </Button>
           </div>
         </label>
         {nameError && (
-          <motion.div 
-            className="name-error"
+          <motion.div
+            className="name-error text-red-500 mt-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
@@ -226,9 +233,9 @@ const App: React.FC = () => {
             {nameError}
           </motion.div>
         )}
-        <motion.button 
-          type="submit" 
-          className="submit-button"
+        <motion.button
+          type="submit"
+          className="submit-button mt-6 px-8 py-3 bg-primary text-white rounded-lg shadow-md hover:bg-primary-dark"
           disabled={!playerName}
           whileHover={{ scale: 1.05 }}
           whileTap={{ y: 4, boxShadow: "0 0px 0px rgba(0,0,0,0.3)" }}
@@ -246,7 +253,7 @@ const App: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <motion.div 
+      <motion.div
         className="player-banner"
         initial={{ y: -20 }}
         animate={{ y: 0 }}
@@ -257,9 +264,9 @@ const App: React.FC = () => {
       <div className="settings">
         <label>
           Niveau:
-          <select 
-            value={difficulty} 
-            onChange={handleDifficultyChange} 
+          <select
+            value={difficulty}
+            onChange={handleDifficultyChange}
             disabled={!board.every(square => square === null)}
           >
             <option value="easy">Facile</option>
@@ -268,26 +275,26 @@ const App: React.FC = () => {
           </select>
         </label>
       </div>
-      
+
       <div className="status">{gameStatus}</div>
-      
-      <Board 
+
+      <Board
         squares={board}
         onClick={handleClick}
         disabled={!!winner || isLoading || !isXNext}
       />
-      
+
       <div className="game-buttons">
-        <motion.button 
-          className="reset-button" 
+        <motion.button
+          className="reset-button"
           onClick={resetGame}
           whileHover={{ scale: 1.05 }}
           whileTap={{ y: 4, boxShadow: "0 0px 0px rgba(0,0,0,0.3)" }}
         >
           {winner || isDraw(board) ? 'Rejouer' : 'Recommencer'}
         </motion.button>
-        <motion.button 
-          className="finish-button" 
+        <motion.button
+          className="finish-button"
           onClick={handleFinishPlaying}
           whileHover={{ scale: 1.05 }}
           whileTap={{ y: 4, boxShadow: "0 0px 0px rgba(0,0,0,0.3)" }}
@@ -301,17 +308,38 @@ const App: React.FC = () => {
   return (
     <div className="app-container">
       <Header />
+      <Routes>
+        <Route path="/" element={
+          <div className="welcome-screen">
+            <h1>Bienvenue au jeux </h1>
+
+            <Button onClick={() => navigate('/tictactoe')}>Commencer à jouer au Tic Tac toe </Button>
+            <button onClick={() => navigate('/pacman')}>Commencer à jouer au pacman </button>
+          </div>
+        } />
+        <Route
+          path="/tictactoe"
+          element={
+            <Board
+              squares={board}
+              onClick={handleClick}
+              disabled={!!winner || isLoading || !isXNext}
+            />
+          }
+        />
+        <Route path="/pacman" element={<PacmanGame />} />
+      </Routes>
       <div className="app">
         <motion.h2
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-        
+
         </motion.h2>
-        
+
         {gameState === 'welcome' ? renderWelcomeScreen() : renderGameScreen()}
-        
+
         <div className="api-status">
           {error && <div className="error">⚠️ {error}</div>}
           {!apiKey && <div className="error">⚠️ Clé API OpenAI manquante dans le fichier .env</div>}
@@ -321,4 +349,3 @@ const App: React.FC = () => {
   );
 };
 
-export default App;

@@ -1,13 +1,12 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import './Header.css';
+import React from 'react';
+import './header.css';
 
-const Header: React.FC = () => {
-  // Animation des lettres
+export default function Header(){
   const title = "Les petits jeux de Camille et Clara";
-  
+
   return (
-    <motion.header 
+    <motion.header
       className="game-header"
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -18,7 +17,7 @@ const Header: React.FC = () => {
           className="emoji-decoration"
           initial={{ rotate: -20, scale: 0 }}
           animate={{ rotate: 0, scale: 1 }}
-          transition={{ 
+          transition={{
             duration: 0.5,
             delay: 0.2,
             type: "spring"
@@ -30,7 +29,7 @@ const Header: React.FC = () => {
           className="emoji-decoration"
           initial={{ rotate: -30, scale: 0 }}
           animate={{ rotate: 0, scale: 1 }}
-          transition={{ 
+          transition={{
             duration: 0.5,
             delay: 0.3,
             type: "spring"
@@ -38,15 +37,15 @@ const Header: React.FC = () => {
         >
           🥳
         </motion.span>
-        
+
         <motion.h1>
           {title.split('').map((char, index) => (
             <motion.span
               key={index}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.3, 
+              transition={{
+                duration: 0.3,
                 delay: index * 0.03,
                 repeat: char === 'C' ? Infinity : 0,
                 repeatType: "reverse",
@@ -58,12 +57,12 @@ const Header: React.FC = () => {
             </motion.span>
           ))}
         </motion.h1>
-        
+
         <motion.span
           className="emoji-decoration"
           initial={{ rotate: 20, scale: 0 }}
           animate={{ rotate: 0, scale: 1 }}
-          transition={{ 
+          transition={{
             duration: 0.5,
             delay: 0.4,
             type: "spring"
@@ -75,7 +74,7 @@ const Header: React.FC = () => {
           className="emoji-decoration"
           initial={{ rotate: 30, scale: 0 }}
           animate={{ rotate: 0, scale: 1 }}
-          transition={{ 
+          transition={{
             duration: 0.5,
             delay: 0.5,
             type: "spring"
@@ -87,5 +86,3 @@ const Header: React.FC = () => {
     </motion.header>
   );
 };
-
-export default Header;
